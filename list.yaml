@@ -1,0 +1,8 @@
+---
+process_list:
+  sample:
+    alert_through: mail
+    ip: 11.11.11.11
+    name: sample
+    process_name: ps -ef | grep sample.sh | wc -l
+    restart_script: ./sample.sh
