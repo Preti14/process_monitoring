@@ -1,0 +1,38 @@
+
+---
+ - name: Checking Service
+   hosts: localhost
+   become: true
+   vars_files:
+     - process_list.yaml
+   vars:
+     process_list: "{{ process_list }}"
+   tasks:
+     - debug:
+         var: process_list
+     - shell: ps -ef | grep httpd | grep -v grep |wc -l
+       register: result
+     - set_fact:
+        result: "{{ result.stdout }}"
+        process_details: "{{ process_list }}"
+     - name: Defining process list
+       debug:
+         msg: "User {{ item.key }} is {{ item.value.name }} ({{ item.value.ip }})"
+       loop: "{{ lookup('dict', process_list) }}"
+     - name: Restart httpd process
+       shell: sudo systemctl start httpd11
+       register: result1
+       ignore_errors: True
+     - name: Retrying results
+       debug:
+         msg: "Retrying results {{ result1.rc }}"
+       when: result == "0"
+       retries: 3
+       delay: 10
+       until: result1.rc == 0
+       ignore_errors: yes
+       #loop: "{{ lookup('dict', process_list) }}"
+     - name: send mail
+       debug:
+         msg: "Service not started, sending mail to the team"
+       when: result1.rc == 5
