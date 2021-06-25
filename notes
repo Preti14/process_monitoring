@@ -1,7 +1,0 @@
-http://10.23.100.28:5005/new_alert 
-{
-"hostname": "HKDB123D",
-"module_name": "DEAD_PROCESS",
-"value": "Java out of memory error has occurred",
-"source_name": "SKYNET"
-} 
